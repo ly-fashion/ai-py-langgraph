@@ -8,6 +8,8 @@ from datetime import datetime
 
 from langchain_core.tools import tool
 
+from agent.store.inMemoryStore40 import save_memory, search_memories
+
 
 @tool
 def calculator(expression: str) -> str:
@@ -136,5 +138,53 @@ def unit_converter(value: float, from_unit: str, to_unit: str) -> str:
     return f"不支持的单位转换: {from_unit} -> {to_unit}"
 
 
+# ============ 长期记忆工具 ============
+
+# 默认用户ID（可通过配置或会话传入）
+DEFAULT_USER_ID = "default"
+
+
+@tool
+def memory_save(content: str, category: str = "memories") -> str:
+    """保存一条长期记忆。当用户提到重要信息（如偏好、习惯、事实等）时使用。
+
+    Args:
+        content: 要保存的记忆内容，应该是简洁明确的陈述句
+        category: 记忆类别，如 preferences（偏好）、facts（事实）、conversations（对话要点）
+    """
+    memory_id = save_memory(
+        user_id=DEFAULT_USER_ID,
+        content=content,
+        category=category,
+    )
+    return f"已保存记忆 (ID: {memory_id}): {content}"
+
+
+@tool
+def memory_search(query: str, category: str = "memories") -> str:
+    """搜索长期记忆。当需要回忆用户之前提到的信息时使用。
+
+    Args:
+        query: 搜索关键词
+        category: 记忆类别（可选）
+    """
+    memories = search_memories(
+        user_id=DEFAULT_USER_ID,
+        query=query,
+        category=category,
+        limit=5,
+    )
+
+    if not memories:
+        return f"未找到与 '{query}' 相关的记忆。"
+
+    result = f"找到 {len(memories)} 条相关记忆：\n"
+    for i, mem in enumerate(memories, 1):
+        content = mem["value"].get("content", str(mem["value"]))
+        result += f"{i}. {content}\n"
+
+    return result
+
+
 # 工具列表 - 在 graph 中使用
-TOOLS = [calculator, get_current_time, text_analyzer, unit_converter]
+TOOLS = [calculator, get_current_time, text_analyzer, unit_converter, memory_save, memory_search]
