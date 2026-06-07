@@ -8,7 +8,8 @@
 ai-py-langgraph/
 ├── main.py              # 主入口（CLI 界面）
 ├── config.py            # 配置管理
-├── requirements.txt     # 依赖列表
+├── pyproject.toml       # 项目元数据与依赖（PEP 621）
+├── requirements.txt     # 依赖列表（兼容传统方式）
 ├── .env.example         # 环境变量模板
 ├── .gitignore
 ├── README.md
@@ -39,24 +40,29 @@ should_continue (条件判断)
 ```
 
 这是一个标准的 **ReAct (Reasoning + Acting)** 模式：
+
 1. **Agent 节点**: 调用 LLM 分析用户输入，决定是否需要工具
 2. **条件边**: 检查 LLM 响应中是否有工具调用请求
 3. **工具节点**: 执行工具并返回结果给 Agent
 
 ### 内置工具
 
-| 工具 | 功能 |
-|------|------|
-| `calculator` | 数学表达式计算 |
-| `get_current_time` | 获取当前时间 |
-| `text_analyzer` | 文本统计分析 |
-| `unit_converter` | 单位转换（长度/重量/温度） |
+| 工具               | 功能                       |
+| ------------------ | -------------------------- |
+| `calculator`       | 数学表达式计算             |
+| `get_current_time` | 获取当前时间               |
+| `text_analyzer`    | 文本统计分析               |
+| `unit_converter`   | 单位转换（长度/重量/温度） |
 
 ## 快速开始
 
 ### 1. 安装依赖
 
 ```bash
+# 方式一：使用 pyproject.toml（推荐）
+pip install -e .
+
+# 方式二：使用 requirements.txt
 pip install -r requirements.txt
 ```
 
@@ -124,6 +130,7 @@ TOOLS = [..., my_new_tool]
 ### 修改 LLM 模型
 
 在 `.env` 文件中修改：
+
 ```
 MODEL_NAME=gpt-4o
 TEMPERATURE=0.5
@@ -139,3 +146,18 @@ TEMPERATURE=0.5
 ## License
 
 MIT
+
+## 项目运行说明
+
+在项目根目录创建了 .venv/ 虚拟环境
+使用 .venv/Scripts/pip 安装了 requirements.txt 中的所有依赖（langgraph、langchain、langchain-openai 等）
+后续使用方式：
+
+运行项目时使用 .venv/Scripts/python.exe main.py
+或先激活虚拟环境：.venv/Scripts/activate（Windows）/ source .venv/bin/activate（Linux/Mac），然后直接 python main.py
+
+关于版本控制：
+.gitignore 中已包含 .venv/，虚拟环境不会被提交到 Git。其他开发者 clone 后只需执行：
+
+python -m venv .venv
+.venv/Scripts/pip install -r requirements.txt
