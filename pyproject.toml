@@ -24,3 +24,8 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["agent"]
 include = ["main.py", "config.py"]
+
+[dependency-groups]
+dev = [
+    "ipython>=9.14.1",
+]
