@@ -85,7 +85,9 @@ config_mine = {"configurable": {"thread_id": "4"}}
 # 第一次运行：会在 action 节点前暂停
 print("=== 第一次运行（到断点暂停）===")
 for chunk in graph.stream(
-    {"messages": "请帮我查一下北京的天气"}, config=config_mine, stream_mode="values"
+    {"messages": "请帮我查一下天津和上海的天气"},
+    config=config_mine,
+    stream_mode="values",
 ):
     print(chunk["messages"][-1])
 
